@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BBIT CAMPUS Lost & Found</title>
+  <meta name="description" content="BBIT CAMPUS Lost & Found — Post, search, and contact for lost or found items." />
+
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#0ea5a4;--muted:#94a3b8;--glass: rgba(255,255,255,0.03)}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; background:linear-gradient(180deg,#071021 0%, #071827 60%);color:#e6eef6;min-height:100vh}
+    .container{max-width:1100px;margin:36px auto;padding:20px}
+
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#0369a1);display:flex;align-items:center;justify-content:center;font-weight:700;color:#022;box-shadow:0 6px 18px rgba(0,0,0,0.6)}
+    h1{margin:0;font-size:20px}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+
+    .card{background:linear-gradient(180deg,var(--card), rgba(11,18,32,0.6));border-radius:12px;padding:18px;box-shadow:0 6px 30px rgba(4,9,20,0.6);}
+
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:18px;margin-top:18px}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}.sidebar-hide{display:none}}
+
+    form .row{display:flex;gap:10px;margin-bottom:10px}
+    label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
+    input[type=text], input[type=email], select, textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:inherit;outline:none}
+    textarea{min-height:90px;resize:vertical}
+    .btn{display:inline-flex;gap:8px;align-items:center;padding:10px 14px;border-radius:10px;border:none;cursor:pointer}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),#0369a1);color:#012}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+    .filters{display:flex;gap:8px;flex-wrap:wrap}
+    .search{display:flex;gap:8px;margin-bottom:12px}
+    .items{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    @media(max-width:640px){.items{grid-template-columns:1fr}}
+
+    .item-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);display:flex;gap:12px}
+    .badge{padding:6px 8px;border-radius:999px;font-weight:600;font-size:12px}
+    .badge-lost{background:rgba(239,68,68,0.12);color:#fecaca;border:1px solid rgba(239,68,68,0.12)}
+    .badge-found{background:rgba(34,197,94,0.08);color:#bbf7d0;border:1px solid rgba(34,197,94,0.06)}
+    .meta{font-size:12px;color:var(--muted)}
+
+    footer{margin-top:18px;color:var(--muted);font-size:13px;text-align:center}
+
+    .muted-small{color:var(--muted);font-size:12px}
+    .empty{padding:28px;border-radius:10px;text-align:center;color:var(--muted);border:1px dashed rgba(255,255,255,0.03)}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">BB</div>
+        <div>
+          <h1>BBIT CAMPUS — Lost & Found</h1>
+          <p class="lead">Report lost or found items, search, and contact the poster. Simple — Private — Free.</p>
+        </div>
+      </div>
+      <div class="muted-small">Made for BBIT CAMPUS • No server required (local demo)</div>
+    </header>
+
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h3 style="margin-top:0">Post an item</h3>
+          <form id="itemForm">
+            <div class="row">
+              <div style="flex:1">
+                <label>Type</label>
+                <select id="type" required>
+                  <option value="lost">Lost</option>
+                  <option value="found">Found</option>
+                </select>
+              </div>
+              <div style="width:150px">
+                <label>Category</label>
+                <select id="category" required>
+                  <option>Documents</option>
+                  <option>Electronics</option>
+                  <option>Wallet</option>
+                  <option>Clothing</option>
+                  <option>Accessories</option>
+                  <option>Other</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="margin-bottom:10px">
+              <label>Item title</label>
+              <input id="title" type="text" placeholder="e.g. Red Wallet with ID" required />
+            </div>
+
+            <div style="margin-bottom:10px">
+              <label>Description & location</label>
+              <textarea id="description" placeholder="Where it was lost/found, extra details..." required></textarea>
+            </div>
+
+            <div class="row">
+              <div style="flex:1">
+                <label>Your name</label>
+                <input id="name" type="text" placeholder="Your name" required />
+              </div>
+              <div style="width:200px">
+                <label>Contact (email or phone)</label>
+                <input id="contact" type="text" placeholder="email@example.com or +91-9xxxx" required />
+              </div>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:10px;align-items:center">
+              <button type="submit" class="btn btn-primary">Post item</button>
+              <button type="button" id="clearAll" class="btn btn-ghost">Clear all posts</button>
+              <div style="margin-left:auto" class="muted-small">Auto-saves in your browser</div>
+            </div>
+          </form>
+        </div>
+
+        <div style="margin-top:14px;" class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <h3 style="margin:0">Browse items</h3>
+            <div class="muted-small">Use filters / search to find items</div>
+          </div>
+
+          <div style="margin-top:12px">
+            <div class="search">
+              <input id="search" type="text" placeholder="Search by title or description" />
+              <select id="filterType">
+                <option value="all">All</option>
+                <option value="lost">Lost</option>
+                <option value="found">Found</option>
+              </select>
+              <select id="filterCategory">
+                <option value="all">All categories</option>
+                <option>Documents</option>
+                <option>Electronics</option>
+                <option>Wallet</option>
+                <option>Clothing</option>
+                <option>Accessories</option>
+                <option>Other</option>
+              </select>
+              <button id="reset" class="btn btn-ghost">Reset</button>
+            </div>
+
+            <div id="items" class="items" style="margin-top:10px"></div>
+            <div id="empty" class="empty" style="display:none;margin-top:10px">Koi item nahi mila — kuch post karo!</div>
+          </div>
+
+        </div>
+      </div>
+
+      <aside class="sidebar-hide">
+        <div class="card">
+          <h3 style="margin-top:0">How it works</h3>
+          <ol style="color:var(--muted);font-size:14px">
+            <li>Form bhar ke item post karo.</li>
+            <li>Search/filter se matching items dekho.</li>
+            <li>Contact button se poster ko email ya phone karo (poster ne diya ho to).</li>
+          </ol>
+          <hr style="border:none;height:1px;background:rgba(255,255,255,0.02);margin:12px 0" />
+          <div class="muted-small">Privacy note: This demo stores posts in your browser's <code>localStorage</code>. For a real deployment, connect to a backend (Firebase / Supabase / Netlify Functions) to store posts centrally.</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0">Tips for posters</h4>
+          <ul style="color:var(--muted);font-size:14px">
+            <li>Clear photos help (not in demo).</li>
+            <li>Include a small unique detail.</li>
+            <li>Reply promptly to contact messages.</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      © <strong>BBIT CAMPUS</strong> Lost & Found — Built with ❤️ • Single-file demo
+    </footer>
+  </div>
+
+  <script>
+    // Simple app using localStorage — single-file demo
+    const ITEMS_KEY = 'bbit_items_v1';
+
+    function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+
+    function loadItems(){
+      try{const raw=localStorage.getItem(ITEMS_KEY);return raw?JSON.parse(raw):[];}catch(e){console.error(e);return[]}
+    }
+    function saveItems(items){localStorage.setItem(ITEMS_KEY,JSON.stringify(items))}
+
+    // UI refs
+    const form=document.getElementById('itemForm');
+    const itemsEl=document.getElementById('items');
+    const emptyEl=document.getElementById('empty');
+    const searchEl=document.getElementById('search');
+    const filterType=document.getElementById('filterType');
+    const filterCategory=document.getElementById('filterCategory');
+    const resetBtn=document.getElementById('reset');
+    const clearAll=document.getElementById('clearAll');
+
+    let items = loadItems();
+
+    // Seed example if empty
+    if(items.length===0){
+      items = [
+        {id:uid(),type:'lost',category:'Wallet',title:'Red leather wallet',description:'Lost near library gate. Contains college ID.',name:'Aman',contact:'aman@example.com',time:Date.now()-3600e3},
+        {id:uid(),type:'found',category:'Electronics',title:'Black earbuds',description:'Found in C block corridor.',name:'Priya',contact:'+91-98xxxx',time:Date.now()-7200e3}
+      ];
+      saveItems(items);
+    }
+
+    function timeAgo(ts){const s=Math.floor((Date.now()-ts)/1000); if(s<60) return s+ 's ago'; const m=Math.floor(s/60); if(m<60) return m+'m ago'; const h=Math.floor(m/60); if(h<24) return h+'h ago'; const d=Math.floor(h/24); return d+'d ago'}
+
+    function render(){
+      const q = (searchEl.value||'').toLowerCase().trim();
+      const t = filterType.value;
+      const c = filterCategory.value;
+
+      const filtered = items.filter(it=>{
+        if(t!=='all' && it.type!==t) return false;
+        if(c!=='all' && it.category!==c) return false;
+        if(q){
+          return (it.title||'').toLowerCase().includes(q) || (it.description||'').toLowerCase().includes(q) || (it.name||'').toLowerCase().includes(q)
+        }
+        return true;
+      }).sort((a,b)=>b.time-a.time);
+
+      itemsEl.innerHTML='';
+      if(filtered.length===0){emptyEl.style.display='block';return} else {emptyEl.style.display='none'}
+
+      for(const it of filtered){
+        const el = document.createElement('div'); el.className='item-card';
+        el.innerHTML = `
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+              <div style="display:flex;gap:10px;align-items:center">
+                <div style="font-weight:700">${escapeHTML(it.title)}</div>
+                <div class="badge ${it.type==='lost'?'badge-lost':'badge-found'}">${it.type.toUpperCase()}</div>
+                <div style="font-size:13px;color:var(--muted);padding-left:6px">${escapeHTML(it.category)}</div>
+              </div>
+              <div style="text-align:right;font-size:12px;color:var(--muted)">${timeAgo(it.time)}</div>
+            </div>
+            <div style="margin-top:8px;color:var(--muted);font-size:13px">${escapeHTML(it.description)}</div>
+            <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+              <div style="font-size:13px">Posted by <strong>${escapeHTML(it.name)}</strong></div>
+              <div style="margin-left:auto;display:flex;gap:8px">
+                <button class="btn btn-ghost" onclick="contact('${encodeURIComponent(it.contact)}','${encodeURIComponent(it.title)}')">Contact</button>
+                <button class="btn btn-ghost" onclick="removeItem('${it.id}')">Remove</button>
+              </div>
+            </div>
+          </div>
+        `;
+        itemsEl.appendChild(el);
+      }
+    }
+
+    function escapeHTML(s){ if(!s) return ''; return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') }
+
+    // Form submit
+    form.addEventListener('submit', e=>{
+      e.preventDefault();
+      const newItem = {
+        id:uid(),
+        type:document.getElementById('type').value,
+        category:document.getElementById('category').value,
+        title:document.getElementById('title').value.trim(),
+        description:document.getElementById('description').value.trim(),
+        name:document.getElementById('name').value.trim(),
+        contact:document.getElementById('contact').value.trim(),
+        time:Date.now()
+      };
+
+      if(!newItem.title || !newItem.description || !newItem.name || !newItem.contact){alert('Please fill required fields');return}
+
+      items.push(newItem);
+      saveItems(items);
+      form.reset();
+      render();
+      alert('Item posted successfully!');
+    });
+
+    // Contact helper
+    function contact(target,subject){
+      const decoded = decodeURIComponent(target);
+      // If it's an email, open mailto; else show an alert with contact details
+      if(decoded.includes('@')){
+        window.location.href = `mailto:${decoded}?subject=${decodeURIComponent(subject)}`;
+      } else {
+        alert('Contact: ' + decoded);
+      }
+    }
+    window.contact = contact;
+
+    function removeItem(id){
+      if(!confirm('Remove this post?')) return;
+      items = items.filter(i=>i.id!==id);
+      saveItems(items);
+      render();
+    }
+    window.removeItem = removeItem;
+
+    // Filters
+    [searchEl,filterType,filterCategory].forEach(el=>el.addEventListener('input',render));
+    resetBtn.addEventListener('click',()=>{searchEl.value='';filterType.value='all';filterCategory.value='all';render()});
+
+    clearAll.addEventListener('click',()=>{
+      if(!confirm('Are you sure? This will delete all posts from this browser.')) return;
+      items = [];
+      saveItems(items);
+      render();
+    });
+
+    // initial render
+    render();
+  </script>
+</body>
+</html>
